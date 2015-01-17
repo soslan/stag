@@ -14,6 +14,7 @@ function StagRoot(args){
 
 	this.append(this.sessionManager);
 	this.append(this.windowManager);
+	this.apps = {};
 	document.body.appendChild(this.e);
 
 }
@@ -22,22 +23,41 @@ StagRoot.prototype = Object.create(Windows.prototype);
 
 StagRoot.prototype.registerApp = function(args){
 	args = args || {};
+	if (args.key === undefined || args.key in this.apps){
+		return;
+	}
+	var app = {
+		onRun: args.onRun || function(){},
+		name: args.name || "Unnamed App",
+		color: args.color || mainColor,
+		key:args.key,
+	};
 	try{
-		args.menuItem = new Element({
+		app.menuItem = new Element({
 			className:'stag-menu-item clickable',
 		});
 
-		args.menuItem.append(args.name || "Unnamed App");
-		args.menuItem.addClass(args.color || mainColor);
-		this.menu.append(args.menuItem);
-		args.menuItem.setAction(function(){
-			args.onRun();
+		app.menuItem.append(app.name || "Unnamed App");
+		app.menuItem.addClass(app.color || mainColor);
+		this.menu.append(app.menuItem);
+		app.menuItem.setAction(function(){
+			app.onRun();
 		});
 	}
 	catch(e){
 
 	}
+	this.apps[app.key] = app;
 };
+
+StagRoot.prototype.runApp = function(key){
+	try{
+		this.apps[key].onRun();
+	}
+	catch(e){
+
+	}
+}
 
 StagRoot.prototype.onStartUp = function(){
 
@@ -48,7 +68,10 @@ StagRoot.prototype.start = function(){
 }
 
 StagRoot.prototype.init = function(){
-	
+	this.splash.hide();
+	this.switchTo(this.windowManager);
+	this.show();
+
 }
 
 
