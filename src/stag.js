@@ -12,7 +12,6 @@ function StagRoot(args){
 
 	this.splash = new Element(document.getElementById('stag-splash'));
 
-	this.append(this.sessionManager);
 	this.append(this.windowManager);
 	this.apps = {};
 	document.body.appendChild(this.e);
@@ -23,6 +22,7 @@ StagRoot.prototype = Object.create(Windows.prototype);
 
 StagRoot.prototype.registerApp = function(args){
 	args = args || {};
+	var self = this;
 	if (args.key === undefined || args.key in this.apps){
 		return;
 	}
@@ -41,7 +41,7 @@ StagRoot.prototype.registerApp = function(args){
 		app.menuItem.addClass(app.color || mainColor);
 		this.menu.append(app.menuItem);
 		app.menuItem.setAction(function(){
-			app.onRun();
+			self.runApp(app.key);
 		});
 	}
 	catch(e){
@@ -52,7 +52,7 @@ StagRoot.prototype.registerApp = function(args){
 
 StagRoot.prototype.runApp = function(key){
 	try{
-		this.apps[key].onRun();
+		this.apps[key].onRun(this.apps[key]);
 	}
 	catch(e){
 
@@ -108,10 +108,10 @@ function StagWindowManager(args){
 	this.filterElement = new TextInputCore({
 		className:'stag-menu-filter',
 	});
-	this.filterElement.addClass(mainColor);
+	this.filterElement.addClass('white');
 	this.menuButton.button.addClass(mainColor);
 	this.menuButton.panel.append(this.filterElement);
-	this.menuButton.panel.addClass(mainColor);
+	this.menuButton.panel.addClass('white');
 	this.toolbar.append(this.menuButton);
 	this.windows = new Windows({
 		share:1,
