@@ -1,6 +1,4 @@
-var mainColor = new Value({
-	value:'blue',
-});
+var mainColor = new StringModel('blue');
 function StagRoot(args){
 	var self = this;
 	args = args || {};
@@ -9,8 +7,6 @@ function StagRoot(args){
 	this.addClass('root');
 	this.windowManager = new StagWindowManager();
 	this.menu = this.windowManager.menuButton.panel;
-
-	this.splash = new Element(document.getElementById('stag-splash'));
 
 	this.append(this.windowManager);
 	this.apps = {};
@@ -59,22 +55,6 @@ StagRoot.prototype.runApp = function(key){
 	}
 }
 
-StagRoot.prototype.onStartUp = function(){
-
-}
-
-StagRoot.prototype.start = function(){
-	this.dispatchEvent('start');
-}
-
-StagRoot.prototype.init = function(){
-	this.splash.hide();
-	this.switchTo(this.windowManager);
-	this.show();
-
-}
-
-
 StagRoot.prototype.addWindow = function(wind, handleArgs){
 	var self = this;
 	handleArgs = handleArgs || {};
@@ -110,7 +90,7 @@ function StagWindowManager(args){
 	});
 	this.filterElement.addClass('white');
 	this.menuButton.button.addClass(mainColor);
-	this.menuButton.panel.append(this.filterElement);
+	//this.menuButton.panel.append(this.filterElement);
 	this.menuButton.panel.addClass('white');
 	this.toolbar.append(this.menuButton);
 	this.windows = new Windows({
