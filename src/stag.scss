@@ -4,6 +4,15 @@
 	
 }
 
+.stag-root{
+	display: flex;
+	position:fixed;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+}
+
 .stag-menu{
 	padding:5px;
 	width:234px;
@@ -24,4 +33,9 @@
 .stag-menu-filter{
 	width:100%;
 	margin-bottom:5px;
+}
+
+.stag-window-title{
+	margin:0;
+	font-weight:100;
 }

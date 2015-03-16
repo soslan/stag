@@ -1,20 +1,23 @@
-var mainColor = new StringModel('blue');
-function StagRoot(args){
+var mainColor = new StringModel('gainsboro');
+var StagRoot = Element.subclass(function(args){
 	var self = this;
 	args = args || {};
-	Windows.call(this, args);
-
-	this.addClass('root');
+	//Windows.call(this, args);
+	this.super.constructor.call(this, args);
+	this.addClass('stag-root');
 	this.windowManager = new StagWindowManager();
+	this.windowManager.style({
+		flex:'1',
+	});
 	this.menu = this.windowManager.menuButton.panel;
 
 	this.append(this.windowManager);
 	this.apps = {};
 	document.body.appendChild(this.e);
 
-}
+});
 
-StagRoot.prototype = Object.create(Windows.prototype);
+//StagRoot.prototype = Object.create(Windows.prototype);
 
 StagRoot.prototype.registerApp = function(args){
 	args = args || {};
@@ -35,12 +38,13 @@ StagRoot.prototype.registerApp = function(args){
 
 		app.menuItem.append(app.name || "Unnamed App");
 		app.menuItem.addClass(app.color || mainColor);
-		this.menu.append(app.menuItem);
+		this.windowManager.menuMiddle.append(app.menuItem);
 		app.menuItem.setAction(function(){
 			self.runApp(app.key);
 		});
 	}
 	catch(e){
+		throw(e);
 
 	}
 	this.apps[app.key] = app;
@@ -51,7 +55,7 @@ StagRoot.prototype.runApp = function(key){
 		this.apps[key].onRun(this.apps[key]);
 	}
 	catch(e){
-
+		throw(e);
 	}
 }
 
@@ -80,25 +84,35 @@ function StagWindowManager(args){
 	});
 	this.menuButton = new Dropdown({
 		className:'quiet',
-		icon:'bars',
+		icon:'apps',
 	},{
 		className:'stag-menu',
 		contentType:'lines',
 	});
+	//this.menuButton.addClass('pink');
 	this.filterElement = new TextInputCore({
 		className:'stag-menu-filter',
 	});
 	this.filterElement.addClass('white');
 	this.menuButton.button.addClass(mainColor);
 	//this.menuButton.panel.append(this.filterElement);
-	this.menuButton.panel.addClass('white');
+	//this.menuButton.panel.addClass('white');
+	this.menuTop = new Element({
+		appendTo:this.menuButton.panel,
+	});
+	this.menuMiddle = new Element({
+		appendTo:this.menuButton.panel,
+	});
+	this.menuBottom = new Element({
+		appendTo:this.menuButton.panel,
+	});
 	this.toolbar.append(this.menuButton);
 	this.windows = new Windows({
 		share:1,
 	});
 
 
-	this.addClass('window-manager black');
+	this.addClass('window-manager');
 
 	this.append(this.bodyContainer);
 	this.bodyContainer.append(this.toolbar);
@@ -136,5 +150,37 @@ StagWindowManager.prototype.create = function(args, handleArgs){
 
 	return container;
 }
+
+var StagWindow = Element.subclass(function(args){
+	var self = this;
+	args = args || {};
+	this.super.constructor.call(this, args);
+	this.addClass('stag-window');
+	//this.addClass(args.className);
+
+	this.toolbar = new Toolbar({
+		className:'stag-window-toolbar'
+	});
+	this.body = new Container({
+		share:1,
+		className:'stag-window-body'
+	});
+	this.body.addClass(args.bodyStyle);
+	this.toolbar.addClass(args.toolbarStyle);
+	var titleElement = Element({
+		tagName:'h3',
+		className:'title h3 stag-window-title',
+		appendTo: this.toolbar,
+	});
+
+	titleElement.append(args.app.name);
+
+	this.super.append.call(this, this.toolbar);
+	this.super.append.call(this, this.body);
+});
+
+StagWindow.def('append', function(arg1){
+	this.body.append(arg1);
+});
 
 var stag = new StagRoot();
